@@ -215,4 +215,29 @@ public class Game {
         }
         return true;
     }
+
+    /**
+     * Returns the board
+     * 
+     * @return the board
+     */
+    public Tile[][] getBoard() {
+        return board;
+    }
+
+    /**
+     * Returns total bombs - flagged tiles and total bombs
+     * 
+     * @return {total bombs - total flagged tiles, total bombs}
+     */
+    public int[] getBombInfo() {
+        int totalFlagged = 0;
+        for (Tile[] tiles : board) {
+            for (Tile tile : tiles) {
+                if (tile.getFlagged()) totalFlagged++;
+            }
+        }
+        int[] returnArr = {numBombs - totalFlagged, numBombs};
+        return returnArr;
+    }
 }
