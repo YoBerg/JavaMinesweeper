@@ -4,7 +4,7 @@
  * A class representing a minesweeper game tile
  * 
  * @author Yohan Berg
- * @version December 3, 2020
+ * @version December 4, 2020
  */
 public class Tile {
 
@@ -67,15 +67,11 @@ public class Tile {
     }
 
     /**
-     * Sets hidden to false if the tile is not flagged.
-     * 
-     * @return Whether or not the tile was successfully revealed
+     * Sets hidden to false and flagged to false.
      */
-    public boolean reveal() {
-        if (!flagged) {
-            this.hidden = false;
-            return true;
-        } else return false;
+    public void reveal() {
+        hidden = false;
+        flagged = false;
     }
 
     /**
@@ -95,5 +91,14 @@ public class Tile {
      */
     public void unFlag() {
         this.flagged = false;
+    }
+
+    /**
+     * Returns if the tile has been revealed
+     * 
+     * @return true if the tile is revealed.
+     */
+    public boolean isRevealed() {
+        return !hidden;
     }
 }
