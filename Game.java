@@ -2,8 +2,6 @@ import java.util.ArrayList;
 import java.math.*;
 import java.util.Objects;
 
-import Tile.TileType;
-
 /**
  * Java Minesweeper - Game
  * 
@@ -16,6 +14,7 @@ public class Game {
 
     private Tile[][] board; // The board of the minesweeper game.
     private Long startTime; // The start time of the game.
+    private Long endTime; // The current time or end time of the game.
     private int numBombs; // The number of bombs in the game.
     private int hiddenBombs; // The number of unflagged bombs in the game.
     private int rows; // The number of rows in the game board.
@@ -40,6 +39,7 @@ public class Game {
         this.cols = cols;
         this.board = new Tile[cols][rows];
         this.startTime = null;
+        this.endTime = null;
         this.numBombs = numBombs;
         this.hiddenBombs = 0;
     }
@@ -61,11 +61,11 @@ public class Game {
             int c = -1;
 
             do {
-                r = Math.floor(Math.random() * rows);
-                c = Math.floor(Math.random() * cols);
+                r = (int) Math.floor(Math.random() * rows);
+                c = (int) Math.floor(Math.random() * cols);
             } while (!Objects.isNull(board[c][r]) || ((c < col + 1 && c > col - 1) && (r < row + 1 && r > row - 1)));
 
-            board[c][r] = new Tile(TileType.BOMB);
+            board[c][r] = new Tile(Tile.TileType.BOMB);
         }
 
         for (int c = 0; c < board.length; c++) {
@@ -78,7 +78,7 @@ public class Game {
                 for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {
                         try {
-                            if (board[c + i][r + j].getType().equals(TileType.BOMB)) adjBombs++;
+                            if (board[c + i][r + j].getType().equals(Tile.TileType.BOMB)) adjBombs++;
                         } catch (IndexOutOfBoundsException e) {
                             continue;
                         } catch (NullPointerException e) {
@@ -89,16 +89,16 @@ public class Game {
 
                 // Sets the tile at the pos based on how many neighbor bombs there are.
                 board[c][r] = new Tile(switch (adjBombs) {
-                    case 0 -> TileType.ZERO;
-                    case 1 -> TileType.ONE;
-                    case 2 -> TileType.TWO;
-                    case 3 -> TileType.THREE;
-                    case 4 -> TileType.FOUR;
-                    case 5 -> TileType.FIVE;
-                    case 6 -> TileType.SIX;
-                    case 7 -> TileType.SEVEN;
-                    case 8 -> TileType.EIGHT;
-                    default -> TileType.ZERO;
+                    case 0 -> Tile.TileType.ZERO;
+                    case 1 -> Tile.TileType.ONE;
+                    case 2 -> Tile.TileType.TWO;
+                    case 3 -> Tile.TileType.THREE;
+                    case 4 -> Tile.TileType.FOUR;
+                    case 5 -> Tile.TileType.FIVE;
+                    case 6 -> Tile.TileType.SIX;
+                    case 7 -> Tile.TileType.SEVEN;
+                    case 8 -> Tile.TileType.EIGHT;
+                    default -> Tile.TileType.ZERO;
                 });
             }
         }
@@ -114,6 +114,7 @@ public class Game {
     public void startGame(int row, int col) throws IndexOutOfBoundsException {
         createBoard(row, col);
         startTime = System.currentTimeMillis();
+        endTime = startTime;
         revealTile(row, col);
     }
 
@@ -124,6 +125,7 @@ public class Game {
      */
     public Long getTime() {
         if (Objects.isNull(startTime)) return null;
+        if (!Objects.isNull(endTime)) return endTime - startTime;
         return System.currentTimeMillis() - startTime;
     }
 
@@ -136,18 +138,21 @@ public class Game {
      * @return An ArrayList of the positions of all revealed tiles.
      */
     public ArrayList<int[]> revealTile(int row, int col) {
-        // TODO Make if tile is bomb, game over.
-
         // Checks if the tile can be revealed.
         if (col < 0 || col >= cols || row < 0 || row >= rows) return new ArrayList<int[]>();
         if (board[col][row].isRevealed()) return new ArrayList<int[]>();
+
+        // If the tile is a bomb, game over.
+        if (board[col][row].getType().equals(Tile.TileType.BOMB)) {
+            return gameOver();
+        }
 
         // Reveals the tile and saves its position.
         board[col][row].reveal();
         int[] pos = {row, col};
         
         // If the tile is a ZERO, reveal the neighboring tiles. Otherwise just return the position.
-        if (board[col][row].getType().equals(TileType.ZERO)) {
+        if (board[col][row].getType().equals(Tile.TileType.ZERO)) {
             ArrayList<int[]> arr = new ArrayList<int[]>();
             arr.addAll(revealTile(row - 1, col - 1));
             arr.addAll(revealTile(row    , col - 1));
@@ -173,5 +178,41 @@ public class Game {
      */
     public void flagTile(int row, int col) {
         board[col][row].flag();
+    }
+
+    /**
+     * Ends the game by revealing all bomb tiles and setting endTime.
+     * 
+     * @return An ArrayList of all bomb positions.
+     */
+    public ArrayList<int[]> gameOver() {
+        
+        endTime = System.currentTimeMillis();
+        ArrayList<int[]> arr = new ArrayList<int[]>();
+        for (int c = 0; c < cols; c++) {
+            for (int r = 0; r < rows; r++) {
+                if (board[c][r].getType().equals(Tile.TileType.BOMB)) {
+                    board[c][r].reveal();
+                    int[] pos = {r, c};
+                    arr.add(pos);
+                }
+            }
+        }
+        return arr;
+    }
+
+    /**
+     * Checks if all non-bomb tiles have been revealed. If so, returns true.
+     * 
+     * @return <code>true</code> if all non-bomb tiles are revealed.
+     */
+    public boolean checkWin() {
+        for (int c = 0; c < cols; c++) {
+            for (int r = 0; r < rows; r++) {
+                // Return false if the tile is not a bomb and is not revealed.
+                if (!board[c][r].getType().equals(Tile.TileType.BOMB) && !board[c][r].isRevealed()) return false;
+            }
+        }
+        return true;
     }
 }
