@@ -63,7 +63,8 @@ public class Game {
             do {
                 r = (int) Math.floor(Math.random() * rows);
                 c = (int) Math.floor(Math.random() * cols);
-            } while (!Objects.isNull(board[c][r]) || ((c < col + 1 && c > col - 1) && (r < row + 1 && r > row - 1)));
+                // redo if tile is not null, or if it is neighboring the starting tile.
+            } while (!Objects.isNull(board[c][r]) || ((c <= col + 1 && c >= col - 1) && (r <= row + 1 && r >= row - 1)));
 
             board[c][r] = new Tile(Tile.TileType.BOMB);
         }
@@ -181,6 +182,16 @@ public class Game {
     }
 
     /**
+     * Attempts to unflag the tile at the specified position.
+     * 
+     * @param row - The row of the tile to be unflagged
+     * @param col - The column of the tile to be unflagged
+     */
+    public void unflagTile(int row, int col) {
+        board[col][row].unFlag();
+    }
+
+    /**
      * Ends the game by revealing all bomb tiles and setting endTime.
      * 
      * @return An ArrayList of all bomb positions.
@@ -231,6 +242,7 @@ public class Game {
      * @return {total bombs - total flagged tiles, total bombs}
      */
     public int[] getBombInfo() {
+        if (Objects.isNull(startTime)) return new int[]{numBombs, numBombs};
         int totalFlagged = 0;
         for (Tile[] tiles : board) {
             for (Tile tile : tiles) {
@@ -239,5 +251,14 @@ public class Game {
         }
         int[] returnArr = {numBombs - totalFlagged, numBombs};
         return returnArr;
+    }
+
+    /**
+     * Returns whether or not the game was started
+     * 
+     * @return <code>true</code> if the game has started
+     */
+    public boolean isStarted() {
+        return !Objects.isNull(startTime);
     }
 }
