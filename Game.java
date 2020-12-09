@@ -8,7 +8,7 @@ import java.util.Objects;
  * A class that runs a Minesweeper game
  * 
  * @author Yohan Berg
- * @version December 4, 2020
+ * @version December 8, 2020
  */
 public class Game {
 
@@ -115,7 +115,6 @@ public class Game {
     public void startGame(int row, int col) throws IndexOutOfBoundsException {
         createBoard(row, col);
         startTime = System.currentTimeMillis();
-        endTime = startTime;
         revealTile(row, col);
     }
 
@@ -138,7 +137,7 @@ public class Game {
      * @param col - The column of the tile to be revealed
      * @return An ArrayList of the positions of all revealed tiles.
      */
-    public ArrayList<int[]> revealTile(int row, int col) {
+    private ArrayList<int[]> revealTileRecursive(int row, int col) {
         // Checks if the tile can be revealed.
         if (col < 0 || col >= cols || row < 0 || row >= rows) return new ArrayList<int[]>();
         if (board[col][row].isRevealed()) return new ArrayList<int[]>();
@@ -169,6 +168,22 @@ public class Game {
             arr.add(pos);
             return arr;
         }
+    }
+
+    /**
+     * Reveals the selected tile. If the tile is a zero, then reveals all the neighbor tiles recursively.
+     * Returns an empty ArrayList if the tile is out of bounds or is already revealed.
+     * 
+     * @param row - The row of the tile to be revealed
+     * @param col - The column of the tile to be revealed
+     * @return An ArrayList of the positions of all revealed tiles.
+     */
+    public ArrayList<int[]> revealTile(int row, int col) {
+        ArrayList<int[]> toReturn = revealTileRecursive(row, col);
+        if (checkWin()) {
+            endTime = System.currentTimeMillis();
+        }
+        return toReturn;
     }
 
     /**

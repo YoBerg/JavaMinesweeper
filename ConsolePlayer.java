@@ -7,7 +7,7 @@ import java.util.Objects;
  * A class that allows the Minesweeper game to be played on a console.
  * 
  * @author Yohan Berg
- * @version December 4, 2020
+ * @version December 8, 2020
  */
 public class ConsolePlayer {
 
@@ -25,6 +25,7 @@ public class ConsolePlayer {
         
         Game game = new Game(rows, cols, numBombs);
 
+        boolean loss = false;
         boolean doLoop = true;
         while (doLoop) {
             System.out.println("Please enter your command. Type 'help' for list of commands");
@@ -35,11 +36,11 @@ public class ConsolePlayer {
                     System.out.println("'help': Shows this list");
                     System.out.println("'bombs': Displays total bombs - flagged tiles and how many total bombs there are");
                     System.out.println("'start_game:[row],[column]': Starts the game with the position row and column");
-                    System.out.println("'reveal_tile:[row],[column]': Reveals the tile at row and column. " +
+                    System.out.println("'reveal:[row],[column]': Reveals the tile at row and column. " +
                     "Game must be started.");
-                    System.out.println("'flag_tile:[row],[column]': Flags the tile at row and column");
-                    System.out.println("'unflag_tile:[row],[column]': Unflags the tile at row and column");
-                    System.out.println("'show_board': Displays the current board");
+                    System.out.println("'flag:[row],[column]': Flags the tile at row and column");
+                    System.out.println("'unflag:[row],[column]': Unflags the tile at row and column");
+                    System.out.println("'display': Displays the current board");
                     System.out.println("'time': Displays your current time in seconds.");
                     System.out.println("'quit': Ends the program");
                     break;
@@ -51,7 +52,7 @@ public class ConsolePlayer {
                         System.out.println("Time: " + (time / 1000));
                     }
                     break;
-                case "show_board":
+                case "display":
                     printBoard(game.getBoard(), game.isStarted());
                     break;
                 case "bombs":
@@ -80,7 +81,7 @@ public class ConsolePlayer {
                             } catch (NumberFormatException e) {
                                 System.out.println("Invalid parameters. Please enter whole numbers");
                             }
-                        } else if (in.substring(0, index).equals("reveal_tile")) {
+                        } else if (in.substring(0, index).equals("reveal")) {
                             try {
                                 int commaIndex = in.indexOf(",");
                                 if (commaIndex == -1) {
@@ -91,11 +92,14 @@ public class ConsolePlayer {
                                 int col = Integer.parseInt(in.substring(commaIndex + 1)) - 1;
 
                                 game.revealTile(row, col);
+                                if (game.getBoard()[col][row].getType().equals(Tile.TileType.BOMB)) {
+                                    loss = true;
+                                }
                                 printBoard(game.getBoard(), game.isStarted());
                             } catch (NumberFormatException e) {
                                 System.out.println("Invalid parameters. Please enter whole numbers");
                             }
-                        } else if (in.substring(0, index).equals("flag_tile")) {
+                        } else if (in.substring(0, index).equals("flag")) {
                             try {
                                 int commaIndex = in.indexOf(",");
                                 if (commaIndex == -1) {
@@ -110,7 +114,7 @@ public class ConsolePlayer {
                             } catch (NumberFormatException e) {
                                 System.out.println("Invalid parameters. Please enter whole numbers");
                             }
-                        } else if (in.substring(0, index).equals("unflag_tile")) {
+                        } else if (in.substring(0, index).equals("unflag")) {
                             try {
                                 int commaIndex = in.indexOf(",");
                                 if (commaIndex == -1) {
@@ -132,6 +136,13 @@ public class ConsolePlayer {
                     } else {
                         System.out.println("Unknown request. Type 'help' to see valid commands");
                     }
+            }
+            if (loss) {
+                System.out.println("You lost! Time: " + (game.getTime() / 1000));
+                break;
+            } else if (game.checkWin()) {
+                System.out.println("You won! Time: " + (game.getTime() / 1000));
+                break;
             }
         }
     }
