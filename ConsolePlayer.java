@@ -162,7 +162,7 @@ public class ConsolePlayer {
             for (int r = 0; r < board.length; r++) {
                 System.out.print((r < 9 ? "0" + (r + 1) : r + 1) + " ");
                 for (int c = 0; c < board[0].length; c++) {
-                    if (board[c][r].getFlagged()) System.out.print(" F ");
+                    if (board[c][r].getFlagged()) System.out.print(" X ");
                     else if (board[c][r].getHidden()) System.out.print(" - ");
                     else if (board[c][r].getType().equals(Tile.TileType.BOMB))  System.out.print(" B ");
                     else if (board[c][r].getType().equals(Tile.TileType.ZERO))  System.out.print(" 0 ");

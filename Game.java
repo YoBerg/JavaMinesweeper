@@ -233,6 +233,7 @@ public class Game {
      * @return <code>true</code> if all non-bomb tiles are revealed.
      */
     public boolean checkWin() {
+        if (Objects.isNull(board[0][0])) return false;
         for (int c = 0; c < cols; c++) {
             for (int r = 0; r < rows; r++) {
                 // Return false if the tile is not a bomb and is not revealed.
