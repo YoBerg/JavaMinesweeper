@@ -41,6 +41,7 @@ public class GUIPlayer extends JComponent implements Runnable {
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
 
+        // Creating game settings inputs and start game button
         heightTextField = new JTextField("16", 2);
         widthTextField = new JTextField("30", 2);
         numBombsTextField = new JTextField("99", 3);
@@ -52,24 +53,19 @@ public class GUIPlayer extends JComponent implements Runnable {
         buttonsPanel.add(numBombsTextField);
         buttonsPanel.add(startButton);
         content.add(buttonsPanel, BorderLayout.NORTH);
-
-        gamePanel = null;
-
         
+        // Initializing empty game panel.
         gamePanel = new JPanel();
-        gamePanel.setLayout(new GridLayout(10, 10));
-        for (int i = 0; i < 100; i++) {
-            gamePanel.add(new JButton(Integer.toString(i + 1)));
-        }
         content.add(gamePanel, BorderLayout.CENTER);
 
         ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                System.out.println("click!");
                 int rows = 0;
                 int cols = 0;
                 int numBombs = 0;
+
+                // Catching non-integer input
                 try {
                     rows = Integer.parseInt(heightTextField.getText());
                     cols = Integer.parseInt(widthTextField.getText());
@@ -80,6 +76,7 @@ public class GUIPlayer extends JComponent implements Runnable {
                     return;
                 }
 
+                // Catching illegal board size for game.
                 try {
                     game = new Game(rows, cols, numBombs);
                 } catch (ImpossibleBoardException ex) {
@@ -89,15 +86,29 @@ public class GUIPlayer extends JComponent implements Runnable {
                     return;
                 }
 
+                // TODO: Store buttons in array so their text can be later edited if they are revealed.
+                gamePanel.removeAll();
+                gamePanel.setLayout(new GridLayout(rows, cols));
+                for (int row = 0; row < rows; row++) {
+                    for (int col = 0; col < cols; col++) {
+                        JButton button = new JButton(" ");
 
-                // JButton[][] board = new JButton[rows][cols];
-                // for (int i = 0; i < board.length; i++) {
-                //     for (int j = 0; j < board[0].length; j++) {
-                //         JButton button = new JButton("B");
-                //         board[i][j] = button;
-                //         gamePanel.add(button);
-                //     }
-                // }
+                        // Adding game function calls on button press.
+                        button.addActionListener(new ActionListener() {
+                            public void actionPerformed(ActionEvent e) {
+                                if (game.isStarted()) {
+                                    // Call revealTile at row and col of button
+                                } else {
+                                    // Call startGame at row and col of button
+                                }
+                            }
+                        });
+
+                        gamePanel.add(button);
+                    }
+                }
+                // Updates the game panel with the new information
+                gamePanel.revalidate();
 
             }
         };
