@@ -8,11 +8,11 @@ import java.util.Objects;
  * A class that runs a Minesweeper game
  * 
  * @author Yohan Berg
- * @version January 3, 2021
+ * @version January 4, 2021
  */
 public class Game {
 
-    private Tile[][] board; // The board of the minesweeper game.
+    private Tile[][] board; // The board of the minesweeper game. Tile[cols][rows]
     private Long startTime; // The start time of the game.
     private Long endTime; // The current time or end time of the game.
     private int numBombs; // The number of bombs in the game.
@@ -69,8 +69,8 @@ public class Game {
             board[c][r] = new Tile(Tile.TileType.BOMB);
         }
 
-        for (int c = 0; c < board.length; c++) {
-            for (int r = 0; r < board.length; r++) {
+        for (int c = 0; c < cols; c++) {
+            for (int r = 0; r < rows; r++) {
                 // Prevents overwriting existing tiles
                 if (!Objects.isNull(board[c][r])) continue;
 

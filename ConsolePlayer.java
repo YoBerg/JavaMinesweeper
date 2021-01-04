@@ -7,7 +7,7 @@ import java.util.Objects;
  * A class that allows the Minesweeper game to be played on a console.
  * 
  * @author Yohan Berg
- * @version December 8, 2020
+ * @version January 4, 2021
  */
 public class ConsolePlayer {
 
@@ -159,9 +159,9 @@ public class ConsolePlayer {
                 System.out.print(" " + (c < 9 ? "0" + (c + 1) : c + 1));
             }
             System.out.println();
-            for (int r = 0; r < board.length; r++) {
+            for (int r = 0; r < board[0].length; r++) {
                 System.out.print((r < 9 ? "0" + (r + 1) : r + 1) + " ");
-                for (int c = 0; c < board[0].length; c++) {
+                for (int c = 0; c < board.length; c++) {
                     if (board[c][r].getFlagged()) System.out.print(" X ");
                     else if (board[c][r].getHidden()) System.out.print(" - ");
                     else if (board[c][r].getType().equals(Tile.TileType.BOMB))  System.out.print(" B ");
