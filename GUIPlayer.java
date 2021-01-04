@@ -9,13 +9,15 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import java.util.ArrayList;
+
 /**
  * Java Minesweeper - GUIPlayer
  * 
  * A class that allows the Minesweeper game to be played through a GUI
  * 
  * @author Yohan Berg
- * @version December 20, 2020
+ * @version January 3, 2021
  */
 public class GUIPlayer extends JComponent implements Runnable {
     
@@ -24,6 +26,7 @@ public class GUIPlayer extends JComponent implements Runnable {
     JTextField numBombsTextField; // A text field to enter a specified number of bombs. Default value is 99.
     JPanel gamePanel; // A panel used to represent the game.
     JButton startButton; // A button that uses the height and width provided to create a minesweeper game.
+    JButton[][] gameButtons; // An 2D array storing the minesweeper tile buttons.
     Game game; // The minesweeper game object.
 
     public static void main(String[] args) {
@@ -58,6 +61,8 @@ public class GUIPlayer extends JComponent implements Runnable {
         gamePanel = new JPanel();
         content.add(gamePanel, BorderLayout.CENTER);
 
+        gameButtons = null;
+
         ActionListener actionListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
@@ -86,24 +91,101 @@ public class GUIPlayer extends JComponent implements Runnable {
                     return;
                 }
 
-                // TODO: Store buttons in array so their text can be later edited if they are revealed.
                 gamePanel.removeAll();
                 gamePanel.setLayout(new GridLayout(rows, cols));
+
+                gameButtons = new JButton[rows][cols];
                 for (int row = 0; row < rows; row++) {
                     for (int col = 0; col < cols; col++) {
+                        // Storing the button in gameButtons
                         JButton button = new JButton(" ");
-
+                        button.setName(row + "," + col);
+                        gameButtons[row][col] = button;
+                        
                         // Adding game function calls on button press.
                         button.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e) {
+                                System.out.println(button.getName());
+                                int row = Integer.valueOf(button.getName().split(",")[0]);
+                                int col = Integer.valueOf(button.getName().split(",")[1]);
                                 if (game.isStarted()) {
                                     // Call revealTile at row and col of button
+                                    // and create a display text for all revealed buttons.
+
+                                    game.revealTile(row, col);
+
+                                    // Below code is attempted smart reveal.
+                                    // for (int[] pos : game.revealTile(row, col)) {
+                                    //     String display = "?";
+                                    //     Tile tile = game.getTile(row, col);
+                                    //     if (tile.getFlagged()) {
+                                    //         display = "X";
+                                    //     } else if (tile.getHidden()) {
+                                    //         display = "-";
+                                    //     } else {
+                                    //         Tile.TileType type = tile.getType();
+                                    //         display = switch (type) {
+                                    //             case BOMB ->    "B";
+                                    //             case ZERO ->    "0";
+                                    //             case ONE ->     "1";
+                                    //             case TWO ->     "2";
+                                    //             case THREE ->   "3";
+                                    //             case FOUR ->    "4";
+                                    //             case FIVE ->    "5";
+                                    //             case SIX ->     "6";
+                                    //             case SEVEN ->   "7";
+                                    //             case EIGHT ->   "8";
+                                    //             default ->      "?";
+                                    //         };
+                                    //     }
+                                    //     gameButtons[pos[0]][pos[1]].setText(display);
+                                    // }
                                 } else {
                                     // Call startGame at row and col of button
+                                    try {
+                                        game.startGame(row, col);
+                                    } catch (IndexOutOfBoundsException ex) {
+                                        ex.printStackTrace();
+                                        JOptionPane.showMessageDialog(null, "Starting tile is out-of-bounds!", 
+                                        "startGame Error!", JOptionPane.ERROR_MESSAGE);
+                                    }
+                                }
+
+                                // Create a display text for all buttons
+                                Tile[][] board = game.getBoard();
+                                for (int r = 0; r < board.length; r++) {
+                                    for (int c = 0; c < board[0].length; c++) {
+                                        String display = "?";
+                                        Tile tile = game.getTile(r, c);
+                                        if (tile.getFlagged()) {
+                                            display = "X";
+                                            gameButtons[r][c].setEnabled(false);
+                                        } else if (tile.getHidden()) {
+                                            display = "-";
+                                        } else {
+                                            Tile.TileType type = tile.getType();
+                                            display = switch (type) {
+                                                case BOMB ->    "B";
+                                                case ZERO ->    "0";
+                                                case ONE ->     "1";
+                                                case TWO ->     "2";
+                                                case THREE ->   "3";
+                                                case FOUR ->    "4";
+                                                case FIVE ->    "5";
+                                                case SIX ->     "6";
+                                                case SEVEN ->   "7";
+                                                case EIGHT ->   "8";
+                                                default ->      "?";
+                                            };
+                                            gameButtons[r][c].setEnabled(false);
+                                        }
+                                        gameButtons[r][c].setText(display);
+                                    }
                                 }
                             }
                         });
 
+                        // Adding the button to the gamePanel.
                         gamePanel.add(button);
                     }
                 }
