@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * A class that allows the Minesweeper game to be played through a GUI
  * 
  * @author Yohan Berg
- * @version January 3, 2021
+ * @version January 4, 2021
  */
 public class GUIPlayer extends JComponent implements Runnable {
     
@@ -152,9 +152,10 @@ public class GUIPlayer extends JComponent implements Runnable {
                                 }
 
                                 // Create a display text for all buttons
-                                Tile[][] board = game.getBoard();
-                                for (int r = 0; r < board.length; r++) {
-                                    for (int c = 0; c < board[0].length; c++) {
+                                int rows = game.getRows();
+                                int cols = game.getCols();
+                                for (int r = 0; r < rows; r++) {
+                                    for (int c = 0; c < cols; c++) {
                                         String display = "?";
                                         Tile tile = game.getTile(r, c);
                                         if (tile.getFlagged()) {

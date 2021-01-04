@@ -255,10 +255,28 @@ public class Game {
     /**
      * Returns the Tile at position row,col
      * 
-     * @return the TIle at position row,col
+     * @return the Tile at position row,col
      */
     public Tile getTile(int row, int col) {
         return board[col][row];
+    }
+
+    /**
+     * Returns the number of rows in the game board.
+     * 
+     * @return the number of rows in the game board.
+     */
+    public int getRows() {
+        return rows;
+    }
+
+    /**
+     * Returns the number of columns in the game board.
+     * 
+     * @return the number of columns in the game board.
+     */
+    public int getCols() {
+        return cols;
     }
 
     /**
