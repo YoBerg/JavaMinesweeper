@@ -8,7 +8,7 @@ import java.util.Objects;
  * A class that runs a Minesweeper game
  * 
  * @author Yohan Berg
- * @version December 8, 2020
+ * @version January 3, 2021
  */
 public class Game {
 
@@ -250,6 +250,15 @@ public class Game {
      */
     public Tile[][] getBoard() {
         return board;
+    }
+
+    /**
+     * Returns the Tile at position row,col
+     * 
+     * @return the TIle at position row,col
+     */
+    public Tile getTile(int row, int col) {
+        return board[col][row];
     }
 
     /**
